@@ -67,7 +67,7 @@ const handleSubmit = async (e: Event) => {
           },
           name: name as string
         },
-        return_url: "http://localhost:3000/success"
+        return_url: "https://main.d3obrrusekx476.amplifyapp.com/success"
       }
       // Uncomment below if you only want redirect for redirect-based payments
       // redirect: "if_required",

@@ -2,7 +2,6 @@
 import { onMounted, ref } from "vue";
 import { Stripe, StripeElements, loadStripe } from "@stripe/stripe-js";
 import { API } from "aws-amplify";
-// import { style } from "./stripeStyle";
 
 const router = useRouter();
 
@@ -40,19 +39,10 @@ const handleSubmit = async (e: Event) => {
 
   // Create payment intents first and grab secret
   try {
-    // const response = await fetch("/api/stripe", {
-    // const response = await fetch(
-    //   "https://9wrsk8tyg9.execute-api.us-east-2.amazonaws.com/prod/stripePurchase",
-    //   {
-    //     method: "POST",
-    //     body: JSON.stringify({ productID: "prod_JfGkdfBBEv5KCi" })
-    //   }
-    // );
     const response = await API.post("StripeAPI", "/stripePurchase", {
-      body: JSON.stringify({ productID: "prod_JfGkdfBBEv5KCi" })
+      body: { productID: "prod_JfGkdfBBEv5KCi" }
     });
     console.log("response", response);
-    // const { secret: clientSecret } = await response.json();
     const { secret: clientSecret } = response;
 
     const { error: submitError } = await elements.submit();

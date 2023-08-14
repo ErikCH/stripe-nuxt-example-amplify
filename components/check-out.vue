@@ -13,6 +13,7 @@ let elements: StripeElements;
 
 onMounted(async () => {
   stripe = await loadStripe(config.public.STRIPE_KEY);
+  // elements
 
   elements = stripe!.elements({
     mode: "payment",

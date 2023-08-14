@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import {
-  PaymentMethodCreateParams,
-  Stripe,
-  StripeElements,
-  loadStripe
-} from "@stripe/stripe-js";
+import { Stripe, StripeElements, loadStripe } from "@stripe/stripe-js";
 // import { style } from "./stripeStyle";
 
 const router = useRouter();
@@ -17,7 +12,6 @@ let loading = ref(true);
 let elements: StripeElements;
 
 onMounted(async () => {
-  const ELEMENT_TYPE = "card";
   stripe = await loadStripe(config.public.STRIPE_KEY);
 
   elements = stripe!.elements({
@@ -25,10 +19,6 @@ onMounted(async () => {
     amount: 1999,
     currency: "usd"
   });
-  // const element = elements.create(ELEMENT_TYPE, style);
-  // element.mount("#stripe-element-mount-point");
-  // const cardElement = elements.create("card");
-  // cardElement.mount("#card-element");
   const paymentElement = elements.create("payment");
   paymentElement.mount("#payment-element");
 
@@ -46,20 +36,6 @@ const handleSubmit = async (e: Event) => {
     new FormData(e.target as HTMLFormElement)
   );
 
-  const billing_details: PaymentMethodCreateParams.BillingDetails = {
-    name: name as string,
-    email: email as string,
-    address: {
-      city: city as string,
-      line1: address as string,
-      state: state as string,
-      postal_code: zip as string,
-      country: "US"
-    }
-  };
-
-  const cardElement = elements.getElement("card");
-
   // Create payment intents first and grab secret
   try {
     const response = await fetch("/api/stripe", {
@@ -68,28 +44,18 @@ const handleSubmit = async (e: Event) => {
     });
     const { secret: clientSecret } = await response.json();
 
-    // Confirm payment
-
-    // Trigger form validation and wallet collection
-
     const { error: submitError } = await elements.submit();
     if (submitError) {
       console.log("error submit");
+      loading.value = false;
       return;
     }
 
-    // const confirm = await stripe?.confirmCardPayment(secret, {
-    //   payment_method: {
-    //     card: cardElement!,
-    //     billing_details
-    //   }
-    // });
-
-    // Use the clientSecret and Elements instance to confirm the setup
     const { error } = await stripe.confirmPayment({
       elements,
       clientSecret,
       confirmParams: {
+        receipt_email: email as string,
         shipping: {
           address: {
             city: city as string,
@@ -107,13 +73,9 @@ const handleSubmit = async (e: Event) => {
     });
 
     loading.value = false;
-    // console.log("error?", confirm?.error);
-    // confirm?.error ? router.push("/error") : router.push("/success");
     if (error.type === "card_error" || error.type === "validation_error") {
       router.push("/error");
     } else {
-      // setMessage("An unexpected error occurred.");
-      // router.push("/success");
       console.log("great");
     }
   } catch (error) {
@@ -128,7 +90,7 @@ const handleSubmit = async (e: Event) => {
     <div class="nes-container with-title">
       <h3>Donkey Kong Country SNES $19.99</h3>
       <div class="img">
-        <img src="donkey.jpeg" alt="" srcset="" />
+        <img src="/images/donkey.jpeg" alt="" srcset="" />
       </div>
     </div>
   </section>
@@ -198,8 +160,6 @@ const handleSubmit = async (e: Event) => {
         </div>
         <div class="nes-field">
           <label for="email_field">Credit Card</label>
-          <!-- <div id="stripe-element-mount-point" class="nes-input" /> -->
-          <!-- <div id="card-element" /> -->
           <div id="payment-element" class="nes-input" />
         </div>
       </fieldset>

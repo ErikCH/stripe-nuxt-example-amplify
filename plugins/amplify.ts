@@ -9,7 +9,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         {
           name: "StripeAPI",
           endpoint:
-            "https://9wrsk8tyg9.execute-api.us-east-2.amazonaws.com/prod",
+            "https://cugmcgwakf.execute-api.us-east-2.amazonaws.com/prod/",
           region: "us-east-2"
         }
       ]
